@@ -1,3 +1,9 @@
+let player;
+let enemies = [];
+let lasers = [];
+let score = 0;
+let gameInterval;
+
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
@@ -81,7 +87,10 @@ class Player extends Entity {
     fire(){
         const X = this.x + this.width / 2 - 4;
         const Y = this.y;
-    }
+
+        const newLaser = new Laser(laserX, laserY, 9, 37, ASSETS.laser);
+        lasers.push(newLaser);
+    } 
 }
 
 class Laser extends Entity {
@@ -92,5 +101,16 @@ class Laser extends Entity {
 
     update(){
         this.y -= this.speed;
+
+        if(this.y + this.height < 0){
+            this.destroyed = true;
+        }
     }
+}
+
+function updateGame(){
+    player.update();
+
+    lasers.forEach(laser => laser.update());
+    lasers.filter(laser => !laser.destroyed);
 }
