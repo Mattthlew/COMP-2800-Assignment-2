@@ -140,4 +140,6 @@ function updateGame(){
 
     lasers.forEach(laser => laser.update());
     lasers.filter(laser => !laser.destroyed);
+
+    enemies.forEach(enemy => enemy.update());
 }
