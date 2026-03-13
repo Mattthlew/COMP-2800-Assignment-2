@@ -24,6 +24,10 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
+window.addEventListener('keyup', (e) => {
+    keys[e.code] = false;
+});
+
 class Entity {
     constructor(x, y, width, height, image) {
         this.x = x;
@@ -51,7 +55,42 @@ class Entity {
 class Player extends Entity {
     constructor(x, y, width, height, image){
         super(x, y, width, height, image);
-        this.speed = 5;
+        this.speed = 15;
         this.cooldown = 0;
+    }
+
+    update(){
+        if(keys['ArrowLeft'] && this.x > 0){
+            this.x -= this.speed;
+        }
+
+        if(keys['ArrowRight'] && this.x < canvas.width - this.width){
+            this.x += this.speed;
+        }
+
+        if(keys['Space'] && this.cooldown <= 0){
+            this.fire()
+            this.cooldown = 30;
+        }
+
+        if(this.cooldown > 0){
+            this.cooldown--;
+        }
+    }
+
+    fire(){
+        const X = this.x + this.width / 2 - 4;
+        const Y = this.y;
+    }
+}
+
+class Laser extends Entity {
+    constructor(x, y, width, height, image){
+        super(x, y, width, height, image);
+        this.speed = 10;
+    }
+
+    update(){
+        this.y -= this.speed;
     }
 }
