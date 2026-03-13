@@ -108,6 +108,33 @@ class Laser extends Entity {
     }
 }
 
+class Enemy extends Entity {
+    constructor(x, y, width, height, image){
+        super(x, y, width, height, image);
+        this.speed = 5;
+    }
+
+    update(direction){
+        this.x = this.speed * direction;
+    }
+}
+
+function createEnemies() {
+    const enemyTotal = 8;
+    const enemySpacing = 100;
+
+    for(let row = 0; row < 3; row++){
+        for(let col = 0; col < monsterTotal; col++){
+            const x = col * monsterSpacing + 50;
+            const y = row * 80 + 50;
+
+            const enemy = new Enemy(x, y, 98, 50, assets.enemy);
+            enemies.push(enemy);
+        }
+    }
+
+}
+
 function updateGame(){
     player.update();
 
