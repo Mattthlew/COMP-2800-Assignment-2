@@ -2,9 +2,9 @@ let player;
 let enemies = [];
 let lasers = [];
 let score = 0;
-let gameInterval;
 let enemyDirection = 1;
 let enemyShouldDrop = false;
+let playerLives = 3;
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -16,11 +16,13 @@ const assets = {
     life: new Image()
 };
 
-async function loadAssets() {
-    assets.player.src = 'player.png';
-    assets.enemy.src = 'enemyShip.png';
-    assets.laser.src = 'laserRed.png';
-    assets.life.src = 'life.png'
+function loadAssets(){
+    return Promise.all([
+        new Promise(res => { assets.player.onload = res; assets.player.src = 'player.png'; }),
+        new Promise(res => { assets.enemy.onload = res; assets.enemy.src = 'enemyShip.png'; }),
+        new Promise(res => { assets.laser.onload = res; assets.laser.src = 'laserRed.png'; }),
+        new Promise(res => { assets.life.onload = res; assets.life.src = 'life.png'; })
+    ]);
 }
 
 const keys = {};
@@ -171,8 +173,15 @@ function updateGame(){
                     laser.destroyed = true;
                     enemy.destroyed = true;
                     score += 1;
+                    return;
                 }
             });
+        });
+
+        enemies.forEach(enemy => {
+            if(enemy.y + enemy.height >= player.y){
+                playerLives--;
+            }
         });
     }
 
@@ -182,12 +191,10 @@ function updateGame(){
             window.location.reload();
         }
 
-        enemies.forEach(enemy => {
-            if(enemy.y + enemy.height >= player.y){
-                alert("The aliens invaded! Game Over!");
-                window.location.reload();
-            }
-        });
+        if(playerLives <= 0){
+            alert("The aliens invaded! Game Over!");
+            window.location.reload();
+        }
     }
 }
 
@@ -203,7 +210,7 @@ function drawGame(){
     ctx.font = '20px Arial';
     ctx.fillText(`Score: ${score}`, 20, 30);
 
-    for(let i = 0; i < 3; i++){
+    for(let i = 0; i < playerLives; i++){
         const lifeX = canvas.width - 150 + (i * 30);
         ctx.drawImage(assets.life, lifeX, 10, 30, 30);
     }
