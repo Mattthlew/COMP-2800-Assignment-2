@@ -115,7 +115,7 @@ class Laser extends Entity {
 class Enemy extends Entity {
     constructor(x, y, width, height, image){
         super(x, y, width, height, image);
-        this.speed = 5;
+        this.speed = 1.5;
     }
 
     update(direction){
@@ -125,11 +125,13 @@ class Enemy extends Entity {
 
 function createEnemies() {
     const enemyTotal = 8;
-    const enemySpacing = 100;
+    const enemySpacing = 80;
+    const totalWidth = enemyTotal * enemySpacing;
+    const X = (canvas.x - totalWidth) / 2;
 
     for(let row = 0; row < 3; row++){
         for(let col = 0; col < enemyTotal; col++){
-            const x = col * enemySpacing + 50;
+            const x = X + col * enemySpacing + 50;
             const y = row * 80 + 50;
 
             const enemy = new Enemy(x, y, 98, 50, assets.enemy);
@@ -137,6 +139,14 @@ function createEnemies() {
         }
     }
 
+}
+
+function resetEnemies() {
+    enemies = [];
+    lasers = [];
+    enemyDirection = 1;
+    enemyShouldDrop = false;
+    createEnemies();
 }
 
 function updateGame(){
@@ -179,8 +189,9 @@ function updateGame(){
         });
 
         enemies.forEach(enemy => {
-            if(enemy.y + enemy.height >= player.y){
+            if(enemy.intersects(player)){
                 playerLives--;
+                setTimeout(resetEnemies, 1000);
             }
         });
     }
