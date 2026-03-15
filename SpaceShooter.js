@@ -202,6 +202,11 @@ function drawGame(){
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
     ctx.fillText(`Score: ${score}`, 20, 30);
+
+    for(let i = 0; i < 3; i++){
+        const lifeX = canvas.width - 150 + (i * 30);
+        ctx.drawImage(assets.life, lifeX, 10, 30, 30);
+    }
 }
 
 function gameLoop(){
