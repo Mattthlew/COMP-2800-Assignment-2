@@ -146,6 +146,7 @@ function updateGame(){
 
     updateEnemies();
     checkCollisions();
+    gameOver();
 
     function updateEnemies(){
         enemies.forEach(enemy => {
@@ -172,6 +173,20 @@ function updateGame(){
                     score += 1;
                 }
             });
+        });
+    }
+
+    function gameOver(){
+        if(enemies.length === 0){
+            alert("You Win! Score: " + score);
+            window.location.reload();
+        }
+
+        enemies.forEach(enemy => {
+            if(enemy.y + enemy.height >= player.y){
+                alert("The aliens invaded! Game Over!");
+                window.location.reload();
+            }
         });
     }
 }
