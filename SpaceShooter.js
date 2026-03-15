@@ -18,7 +18,7 @@ const assets = {
 
 async function loadAssets() {
     assets.player.src = 'player.png';
-    assets.enemy.src = 'enemy.png';
+    assets.enemy.src = 'enemyShip.png';
     assets.laser.src = 'laserRed.png';
     assets.life.src = 'life.png'
 }
@@ -126,8 +126,8 @@ function createEnemies() {
     const enemySpacing = 100;
 
     for(let row = 0; row < 3; row++){
-        for(let col = 0; col < monsterTotal; col++){
-            const x = col * monsterSpacing + 50;
+        for(let col = 0; col < enemyTotal; col++){
+            const x = col * enemySpacing + 50;
             const y = row * 80 + 50;
 
             const enemy = new Enemy(x, y, 98, 50, assets.enemy);
@@ -142,6 +142,7 @@ function updateGame(){
 
     lasers.forEach(laser => laser.update());
     lasers = lasers.filter(laser => !laser.destroyed);
+    enemies = enemies.filter(enemy => !enemy.destroyed);
 
     updateEnemies();
     checkCollisions();
@@ -181,11 +182,11 @@ function drawGame(){
 
     player.draw(ctx);
     lasers.forEach(laser => laser.draw(ctx));
-    enemy.forEach(enemy => enemy.draw(ctx));
+    enemies.forEach(enemy => enemy.draw(ctx));
 
     ctx.fillStyle = 'white';
     ctx.font = '20px Arial';
-    ctx.fillText('Score: ${score}', 20, 30);
+    ctx.fillText(`Score: ${score}`, 20, 30);
 }
 
 function gameLoop(){
