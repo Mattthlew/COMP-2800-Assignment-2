@@ -3,6 +3,8 @@ let enemies = [];
 let lasers = [];
 let score = 0;
 let gameInterval;
+let enemyDirection = 1;
+let enemyShouldDrop = false;
 
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -88,7 +90,7 @@ class Player extends Entity {
         const X = this.x + this.width / 2 - 4;
         const Y = this.y;
 
-        const newLaser = new Laser(laserX, laserY, 9, 37, ASSETS.laser);
+        const newLaser = new Laser(X, Y, 9, 37, assets.laser);
         lasers.push(newLaser);
     } 
 }
@@ -115,7 +117,7 @@ class Enemy extends Entity {
     }
 
     update(direction){
-        this.x = this.speed * direction;
+        this.x += this.speed * direction;
     }
 }
 
@@ -139,7 +141,64 @@ function updateGame(){
     player.update();
 
     lasers.forEach(laser => laser.update());
-    lasers.filter(laser => !laser.destroyed);
+    lasers = lasers.filter(laser => !laser.destroyed);
 
-    enemies.forEach(enemy => enemy.update());
+    updateEnemies();
+    checkCollisions();
+
+    function updateEnemies(){
+        enemies.forEach(enemy => {
+            if(enemy.x + enemy.width > canvas.width || enemy.x < 0){
+                enemyShouldDrop = true;
+            }
+        });
+
+        if(enemyShouldDrop){
+            enemyDirection *= -1;
+            enemies.forEach(enemy => enemy.y += 40);
+            enemyShouldDrop = false;
+        }
+
+        enemies.forEach(enemy => enemy.update(enemyDirection));
+    }
+
+    function checkCollisions(){
+        lasers.forEach(laser => {
+            enemies.forEach(enemy => {
+                if(laser.intersects(enemy)){
+                    laser.destroyed = true;
+                    enemy.destroyed = true;
+                    score += 1;
+                }
+            });
+        });
+    }
 }
+
+function drawGame(){
+    ctx.fillStyle = 'black';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    player.draw(ctx);
+    lasers.forEach(laser => laser.draw(ctx));
+    enemy.forEach(enemy => enemy.draw(ctx));
+
+    ctx.fillStyle = 'white';
+    ctx.font = '20px Arial';
+    ctx.fillText('Score: ${score}', 20, 30);
+}
+
+function gameLoop(){
+    updateGame();
+    drawGame();
+    requestAnimationFrame(gameLoop);
+}
+
+window.onload = async() => {
+    await loadAssets();
+
+    player = new Player(canvas.width/2-45, canvas.height-100, 99, 75, assets.player);
+    createEnemies();
+
+    gameLoop();
+};
